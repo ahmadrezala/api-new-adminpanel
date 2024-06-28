@@ -1,0 +1,17 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Base\ServiceResult;
+use App\Base\ServiceWrapper;
+
+class {{ class }}
+{
+
+    public function __construct()
+    {
+
+    }
+
+
+}

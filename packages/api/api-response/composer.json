@@ -1,0 +1,19 @@
+{
+    "name": "api/api-response",
+    "description": "response for api project",
+    "autoload": {
+        "psr-4": {
+            "Api\\ApiResponse\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ahmadreza",
+            "email": "ahmadrezala764@gmail.com"
+        }
+    ],
+    "require": {
+        "Illuminate" : "`5"
+
+    }
+}
