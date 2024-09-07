@@ -48,7 +48,7 @@ class BannerRepository
 
 
 
-            if (isset ($inputs['image'])) {
+            if (isset($inputs['image'])) {
 
                 $this->handleImageDelete($banner);
 
@@ -94,7 +94,7 @@ class BannerRepository
     }
     public function showBanner($banner): ServiceResult
     {
-        return app(ServiceWrapper::class)(function () use($banner) {
+        return app(ServiceWrapper::class)(function () use ($banner) {
             return $banner;
 
 

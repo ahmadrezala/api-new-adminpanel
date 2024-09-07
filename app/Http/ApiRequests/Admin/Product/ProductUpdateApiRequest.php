@@ -2,6 +2,7 @@
 
 namespace App\Http\ApiRequests\Admin\Product;
 
+use Illuminate\Validation\Rule;
 use App\RestfulApi\ApiFormRequest;
 
 class ProductUpdateApiRequest extends ApiFormRequest
@@ -25,7 +26,7 @@ class ProductUpdateApiRequest extends ApiFormRequest
             'name' => 'required',
             'brand_id' => 'required|exists:brands,id',
             'is_active' => 'required',
-            'slug' => 'required|unique:products,slug',
+            'slug' => ['required ', Rule::unique('products', 'slug')->ignore($this->product->id)],
             'tag_ids' => 'required',
             'tag_ids.*' => 'exists:tags,id',
             'description' => 'required',

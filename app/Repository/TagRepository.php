@@ -51,10 +51,13 @@ class TagRepository
         });
 
     }
-    public function getAllTags(): ServiceResult
+    public function getAllTags($search): ServiceResult
     {
-        return app(ServiceWrapper::class)(function () {
-            return $this->tag->orderBy('id', 'desc')->paginate(5);
+        return app(ServiceWrapper::class)(function () use ($search) {
+            return $this->tag->where('name', 'like', '%' . $search . '%')
+                ->orderBy('id', 'desc')
+                ->paginate(5);
+
 
 
         });

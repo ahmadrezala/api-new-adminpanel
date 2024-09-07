@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\ServiceResult;
 use App\Base\ServiceWrapper;
+use App\Models\ProductImage;
 
 class ProductImageRepository
 {
@@ -21,7 +22,7 @@ class ProductImageRepository
         return app(ServiceWrapper::class)(function () use ($inputs, $product) {
 
 
-            if (isset ($inputs['primary_image'])) {
+            if (isset($inputs['primary_image'])) {
 
                 $this->handleImageDelete($product);
 
@@ -33,7 +34,7 @@ class ProductImageRepository
 
             }
 
-            if (isset ($inputs['images'])) {
+            if (isset($inputs['images'])) {
 
                 $this->handleImagesDelete($product);
 
@@ -49,6 +50,32 @@ class ProductImageRepository
 
 
         });
+
+    }
+
+
+
+    public function deleteImages($productImage): ServiceResult
+    {
+      
+        return app(ServiceWrapper::class)(function () use ($productImage) {
+            $this->handelDeleteProductImages($productImage);
+            return $productImage->delete();
+        });
+
+    }
+
+
+    public function handelDeleteProductImages($productImage)
+    {
+
+        if (!empty($productImage->image)) {
+            $imagePath = public_path($productImage->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
 
     }
 

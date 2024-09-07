@@ -26,15 +26,16 @@ class CategoryUpdateApiRequest extends ApiFormRequest
         return [
 
             'name' => 'required',
-            'slug' => 'required|unique:categories,slug',
-            'description' => ['required ', Rule::unique('categories', 'slug')->ignore($this->category->id)],
+            'is_active' => 'required',
+            'slug' => ['required ', Rule::unique('categories', 'slug')->ignore($this->category->id)],
+            'description' => 'required ',
             'parent_id' => 'required',
             'attribute_ids' => 'required',
             'attribute_ids.*' => 'exists:attributes,id',
             'attribute_is_filter_ids' => 'required',
             'attribute_is_filter_ids.*' => 'exists:attributes,id',
             'variation_id' => 'required|exists:attributes,id',
-            'image' => 'required|mimes:jpg,jpeg,png,svg,webp',
+            'image' => 'required_if:categories,image,null||mimes:jpg,jpeg,png,svg,webp',
 
         ];
     }

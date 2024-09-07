@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Models\Brand;
+use Illuminate\Http\Request;
+use App\Repository\BrandRepository;
 use App\Http\Controllers\Controller;
 use Api\ApiResponse\Facades\ApiResponse;
 use App\Http\ApiRequests\Admin\Brand\BrandStoreApiRequest;
 use App\Http\ApiRequests\Admin\Brand\BrandUpadateApiRequest;
 use App\Http\Resources\Admin\BrandResource\BrandsListApiResource;
-use App\Repository\BrandRepository;
+
 
 class BrandController extends Controller
 {
@@ -25,9 +27,10 @@ class BrandController extends Controller
 
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $result = $this->brandRepository->getAllBrands();
+
+        $result = $this->brandRepository->getAllBrands($request->query('search'));
         return $result->ok
             ? ApiResponse::withData([
                 'brands' => BrandsListApiResource::collection($result->data)->response()->getData()->data,
@@ -71,7 +74,6 @@ class BrandController extends Controller
     {
 
         return ApiResponse::withData($brand)->build()->response();
-
     }
 
     /**

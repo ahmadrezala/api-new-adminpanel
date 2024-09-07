@@ -14,6 +14,15 @@ class ProductListApiResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'is_active' => $this->is_active,
+            'primary_image' => url($this->primary_image),
+            'category' => $this->category->name,
+            'brand' => $this->brand->name,
+
+        ];
     }
 }

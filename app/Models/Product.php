@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Models\Tag;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\ProductImage;
 use App\Models\ProductAttribute;
+use App\Models\ProductVariation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -31,7 +34,7 @@ class Product extends Model
 
     public function attributes()
     {
-        return $this->belongsToMany(ProductAttribute::class);
+        return $this->hasMany(ProductAttribute::class);
     }
     public function tags()
     {
@@ -41,5 +44,18 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class);
     }
 }

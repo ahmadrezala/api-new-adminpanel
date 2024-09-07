@@ -6,13 +6,15 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Base\ServiceResult;
 use App\Base\ServiceWrapper;
+use App\Models\Brand;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariation;
+use App\Models\Tag;
 
 class ProductRepository
 {
 
-    public function __construct(public Product $product)
+    public function __construct(private Product $product, private Category $category, private Brand $brand, private Tag $tag)
     {
 
     }
@@ -64,6 +66,7 @@ class ProductRepository
 
             $product->update([
                 'name' => $inputs['name'],
+                'slug' => $inputs['slug'],
                 'brand_id' => $inputs['brand_id'],
                 'description' => $inputs['description'],
                 'is_active' => $inputs['is_active'],
@@ -71,7 +74,7 @@ class ProductRepository
                 'delivery_amount_per_product' => $inputs['delivery_amount_per_product'],
             ]);
 
-
+            $product->tags()->sync($inputs['tag_ids']);
 
             $this->updateProductAttributes($inputs['attribute_ids']);
             $this->updateProductVariations($inputs['variation_values']);
@@ -82,23 +85,60 @@ class ProductRepository
         });
 
     }
+
+
     public function deleteProduct($product): ServiceResult
     {
 
         return app(ServiceWrapper::class)(function () use ($product) {
 
 
+            $this->handleImageDelete($product);
+            $this->handleImagesDelete($product);
+            return $product->delete();
 
 
         });
 
     }
 
-
-    public function getAllProducts(): ServiceResult
+    public function handleImageDelete($product)
     {
-        return app(ServiceWrapper::class)(function () {
-            return $this->product->orderBy('id', 'desc')->paginate(9);
+        if (!empty($product->primary_image)) {
+            $imagePath = public_path($product->primary_image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+
+    }
+    public function handleImagesDelete($product)
+    {
+        $images = $product->images()->get()->pluck('image')->toArray();
+
+        if (!empty($images)) {
+            foreach ($images as $image) {
+                $imagePath = public_path($image);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+
+        }
+
+
+
+    }
+
+
+    public function getAllProducts($search, $count): ServiceResult
+    {
+        return app(ServiceWrapper::class)(function () use ($search, $count) {
+            return $this->product->where('name', 'like', '%' . $search . '%')
+                ->orderBy('id', 'desc')
+                ->paginate($count);
+            ;
         });
     }
 
@@ -177,6 +217,29 @@ class ProductRepository
                 'sku' => $inputs['variation_values']['sku'][$i]
             ]);
         }
+    }
+
+
+
+    public function getAllCategories(): ServiceResult
+    {
+        return app(ServiceWrapper::class)(function () {
+            return $this->category->all();
+        });
+    }
+
+    
+    public function getAllBrands(): ServiceResult
+    {
+        return app(ServiceWrapper::class)(function () {
+            return $this->brand->all();
+        });
+    }
+    public function getAllTags(): ServiceResult
+    {
+        return app(ServiceWrapper::class)(function () {
+            return $this->tag->all();
+        });
     }
 
 

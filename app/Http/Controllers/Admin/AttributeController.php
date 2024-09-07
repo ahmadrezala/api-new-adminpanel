@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Attribute;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repository\AttributeRepository;
 use Api\ApiResponse\Facades\ApiResponse;
@@ -24,11 +25,16 @@ class AttributeController extends Controller
 
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $result = $this->attributeRepository->getAllAttributes();
+        $result = $this->attributeRepository->getAllAttributes($request->query('search'));
         return $result->ok
-            ? ApiResponse::withData(AttributeListApiResource::collection($result->data)->resource)->build()->response()
+            ? ApiResponse::withData([
+                'attributes' => AttributeListApiResource::collection($result->data)->response()->getData()->data,
+                'total_pages' => AttributeListApiResource::collection($result->data)->response()->getData()->meta->last_page,
+                'current_page' => AttributeListApiResource::collection($result->data)->response()->getData()->meta->current_page,
+
+            ])->build()->response()
             : ApiResponse::withMessage('Something is wrong. try again later!')->withStatus(500)->build()->response();
 
 
@@ -44,6 +50,14 @@ class AttributeController extends Controller
         return $result->ok
             ? ApiResponse::withData(new AttributeListApiResource($result->data))->withMessage('Attribute create successfully')->build()->response()
             : ApiResponse::withMessage('Something is wrong. try again later!')->withStatus(500)->build()->response();
+    }
+
+
+    public function show(Attribute $attribute)
+    {
+
+        return ApiResponse::withData($attribute)->build()->response();
+
     }
 
 

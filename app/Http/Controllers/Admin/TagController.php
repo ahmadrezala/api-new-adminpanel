@@ -20,11 +20,16 @@ class TagController extends Controller
 
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $result = $this->TagRepository->getAllTags();
+        $result = $this->TagRepository->getAllTags($request->query('search'));
         return $result->ok
-            ? ApiResponse::withData(TagListApiResource::collection($result->data)->resource)->build()->response()
+            ? ApiResponse::withData([
+                'tags' => TagListApiResource::collection($result->data)->response()->getData()->data,
+                'total_pages' => TagListApiResource::collection($result->data)->response()->getData()->meta->last_page,
+                'current_page' => TagListApiResource::collection($result->data)->response()->getData()->meta->current_page,
+
+            ])->build()->response()
             : ApiResponse::withMessage('Something is wrong. try again later!')->withStatus(500)->build()->response();
 
 
@@ -52,6 +57,12 @@ class TagController extends Controller
         return $result->ok
             ? ApiResponse::withMessage('Tag updated successfully')->build()->response()
             : ApiResponse::withMessage('Something is wrong. try again later!')->withStatus(500)->build()->response();
+    }
+
+    public function show(Tag $tag)
+    {
+
+        return ApiResponse::withData($tag)->build()->response();
     }
 
     /**

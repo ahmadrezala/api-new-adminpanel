@@ -19,10 +19,9 @@ class CategoryListApiResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'is_active' => $this->is_active,
             'description' => $this->description,
             'image' => url($this->image),
-            'attributes' => AttributeListApiResource::collection($this->attributes)
-
 
         ];
 

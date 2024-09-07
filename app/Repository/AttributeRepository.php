@@ -51,10 +51,12 @@ class AttributeRepository
         });
 
     }
-    public function getAllAttributes(): ServiceResult
+    public function getAllAttributes($search): ServiceResult
     {
-        return app(ServiceWrapper::class)(function () {
-            return $this->Attribute->orderBy('id', 'desc')->paginate(2);
+        return app(ServiceWrapper::class)(function () use ($search) {
+            return $this->Attribute->where('name', 'like', '%' . $search . '%')
+                ->orderBy('id', 'desc')
+                ->paginate(5);
 
 
         });

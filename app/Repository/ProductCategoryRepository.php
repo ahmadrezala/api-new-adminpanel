@@ -11,17 +11,33 @@ use App\Models\ProductVariation;
 class ProductCategoryRepository
 {
 
-    public function __construct()
+    public function __construct(private Category $category)
     {
 
     }
 
 
 
+    public function getAllCategories()
+    {
+
+
+        return app(ServiceWrapper::class)(function () {
+
+            return $this->category->all();
+           
+
+        });
+
+    }
+
+
+
+
 
     public function updateCategory(array $inputs, $product): ServiceResult
     {
-       
+
 
         return app(ServiceWrapper::class)(function () use ($inputs, $product) {
 

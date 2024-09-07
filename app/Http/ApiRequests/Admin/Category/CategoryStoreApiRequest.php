@@ -23,6 +23,8 @@ class CategoryStoreApiRequest extends ApiFormRequest
     {
         return [
             'name' => 'required',
+            'is_active' => 'required',
+            'parent_id' => 'required',
             'slug' => 'required|unique:categories,slug',
             'description' => 'required',
             'attribute_ids' => 'required',

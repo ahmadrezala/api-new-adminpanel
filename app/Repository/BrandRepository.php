@@ -53,12 +53,13 @@ class BrandRepository
         });
 
     }
-    public function getAllBrands(): ServiceResult
+    public function getAllBrands($search): ServiceResult
     {
-        return app(ServiceWrapper::class)(function () {
-            return $this->brand->orderBy('id', 'desc')->paginate(5);
-
-
+        return app(ServiceWrapper::class)(function () use ($search) {
+            return $this->brand
+                ->where('name', 'like', '%' . $search . '%')
+                ->orderBy('id', 'desc')
+                ->paginate(5);
 
         });
 

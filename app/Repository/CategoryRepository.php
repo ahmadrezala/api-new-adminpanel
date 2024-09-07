@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Models\Category;
+use App\Models\Attribute;
 use App\Base\ServiceResult;
+
 use App\Base\ServiceWrapper;
 use Illuminate\Support\Facades\File;
 
@@ -11,7 +13,7 @@ class CategoryRepository
 {
 
 
-    public function __construct(private Category $category)
+    public function __construct(private Category $category, private Attribute $attribute)
     {
 
 
@@ -33,6 +35,8 @@ class CategoryRepository
             $category = $this->category->create([
                 'name' => $inputs['name'],
                 'slug' => $inputs['slug'],
+                'is_active' => $inputs['is_active'],
+                'parent_id' => $inputs['parent_id'],
                 'image' => $image,
                 'description' => $inputs['description'],
 
@@ -54,18 +58,25 @@ class CategoryRepository
 
         return app(ServiceWrapper::class)(function () use ($inputs, $category) {
 
-            if ($inputs['image']) {
+
+            if (isset($inputs['image'])) {
 
                 // delete old image
                 $this->handleImageDelete($category);
                 //  upload new image
                 $image = uploadimages($inputs['image'], 'category');
+
+                $category->update([
+                    'image' => $image,
+
+                ]);
             }
 
             $category->update([
                 'name' => $inputs['name'],
                 'slug' => $inputs['slug'],
-                'image' => $image,
+                'is_active' => $inputs['is_active'],
+                'parent_id' => $inputs['parent_id'],
                 'description' => $inputs['description'],
 
             ]);
@@ -113,10 +124,27 @@ class CategoryRepository
     }
 
 
-    public function getAllCategorys(): ServiceResult
+    public function getAllCategories($search, $count): ServiceResult
+    {
+        return app(ServiceWrapper::class)(function () use ($search, $count) {
+            return $this->category->where('name', 'like', '%' . $search . '%')
+                ->orderBy('id', 'desc')
+                ->paginate($count);
+            ;
+        });
+    }
+
+
+    public function getAllAttributes(): ServiceResult
     {
         return app(ServiceWrapper::class)(function () {
-            return $this->category->orderBy('id', 'desc')->paginate(9);
+            return $this->attribute->all();
+        });
+    }
+    public function getParentCategories(): ServiceResult
+    {
+        return app(ServiceWrapper::class)(function () {
+            return $this->category->all();
         });
     }
 
